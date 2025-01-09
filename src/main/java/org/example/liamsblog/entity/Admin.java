@@ -20,4 +20,13 @@ public class Admin {
     
     @Column(nullable = false)
     private String role;
+
+    @Column(length = 200)
+    private String avatar;
+
+    @Column(length = 10)
+    private String gender;
+
+    @Column(length = 50)
+    private String identity;
 } 

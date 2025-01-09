@@ -31,18 +31,33 @@ public class AuthService {
             throw new RuntimeException("用户名已存在");
         }
 
+        // 创建新用户
         Admin admin = new Admin();
         admin.setUsername(request.getUsername());
         admin.setPassword(passwordEncoder.encode(request.getPassword()));
         admin.setRole("ROLE_ADMIN");
-        adminRepository.save(admin);
+        admin.setAvatar("default_avatar.png");
+        admin.setGender("未知");
+        admin.setIdentity("管理员");
+        
+        try {
+            admin = adminRepository.save(admin);
+        } catch (Exception e) {
+            throw new RuntimeException("注册失败：" + e.getMessage());
+        }
 
+        // 生成token
         UserDetails userDetails = new User(admin.getUsername(), admin.getPassword(), new ArrayList<>());
         String token = jwtUtil.generateToken(userDetails);
 
+        // 返回完整的响应
         return AuthResponse.builder()
                 .token(token)
+                .uid(admin.getId())
                 .username(admin.getUsername())
+                .avatar(admin.getAvatar())
+                .gender(admin.getGender())
+                .identity(admin.getIdentity())
                 .build();
     }
 
@@ -59,7 +74,11 @@ public class AuthService {
 
         return AuthResponse.builder()
                 .token(token)
+                .uid(admin.getId())
                 .username(admin.getUsername())
+                .avatar(admin.getAvatar())
+                .gender(admin.getGender())
+                .identity(admin.getIdentity())
                 .build();
     }
 } 
